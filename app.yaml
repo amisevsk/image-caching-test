@@ -1,0 +1,51 @@
+kind: Template
+apiVersion: v1
+metadata:
+  labels:
+    app: daemonset-test
+  name: daemonset-test
+objects:
+- kind: ServiceAccount
+  apiVersion: v1
+  metadata:
+    labels:
+      app: daemonset-test
+    name: ${SERVICEACCOUNT_NAME}
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    labels:
+      app: daemonset-test
+    name: daemonset-dc
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 2
+    selector:
+      app: daemonset-test
+    strategy:
+      type: "Recreate"
+    template:
+      metadata:
+        labels:
+          app: daemonset-test
+      spec: 
+        containers: 
+        - name: daemonset-test-container
+          image: ${IMAGE}:${IMAGE_TAG}
+          imagePullPolicy: Never
+          envFrom:
+          - configMapRef:
+              name: che-image-caching
+          env: 
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+        serviceAccountName: ${SERVICEACCOUNT_NAME}
+parameters:
+- name: SERVICEACCOUNT_NAME
+  value: daemonset-sa
+- name: IMAGE
+  value: image-caching-test
+- name: IMAGE_TAG
+  value: dev

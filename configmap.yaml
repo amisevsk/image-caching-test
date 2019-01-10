@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: che-image-caching
+type: Opaque
+data:
+  IMAGES: >
+    che-theia=eclipse/che-theia:0.3.16-nightly;
+    che-dev=eclipse/che-dev:nightly;
+  DAEMONSET_NAME: "daemonset-test"
+  CACHING_INTERVAL_HOURS: "12"

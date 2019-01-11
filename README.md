@@ -1,7 +1,27 @@
+## Makefile
+```bash
+# First, set minishift env:
+eval $(minishift oc-env)
+eval $(minishift docker-env)
+# Build Go binary:
+make build
+# Make docker image:
+make docker
+# Rollout on openshift:
+make rollout
+# The three above:
+make
+# Clean:
+make clean
+# (Untested) configure minishift cluster:
+make configure
+```
+
 ## Building
 ```bash
 GOOS=linux go build -o ./app . && docker build -t image-caching-test:dev .
 ```
+
 ## Deploying (minishift)
 
 0. Set up some env vars for convenience:

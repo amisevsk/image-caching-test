@@ -1,3 +1,3 @@
 FROM gcr.io/distroless/base
-COPY "./image-caching-test" "/"
+COPY "./bin/image-caching-test" "/"
 CMD ["/image-caching-test"]

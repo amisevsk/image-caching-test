@@ -2,35 +2,35 @@ kind: Template
 apiVersion: v1
 metadata:
   labels:
-    app: daemonset-test
-  name: daemonset-test
+    app: che-image-caching
+  name: che-image-caching
 objects:
 - kind: ServiceAccount
   apiVersion: v1
   metadata:
     labels:
-      app: daemonset-test
+      app: che-image-caching
     name: ${SERVICEACCOUNT_NAME}
 - kind: DeploymentConfig
   apiVersion: v1
   metadata:
     labels:
-      app: daemonset-test
-    name: daemonset-dc
+      app: che-image-caching
+    name: che-image-caching
   spec:
     replicas: 1
     revisionHistoryLimit: 2
     selector:
-      app: daemonset-test
+      app: che-image-caching
     strategy:
       type: "Recreate"
     template:
       metadata:
         labels:
-          app: daemonset-test
+          app: che-image-caching
       spec: 
         containers: 
-        - name: daemonset-test-container
+        - name: che-image-caching
           image: ${IMAGE}:${IMAGE_TAG}
           imagePullPolicy: Never
           envFrom:
@@ -44,7 +44,7 @@ objects:
         serviceAccountName: ${SERVICEACCOUNT_NAME}
 parameters:
 - name: SERVICEACCOUNT_NAME
-  value: daemonset-sa
+  value: che-imagecaching-sa
 - name: IMAGE
   value: image-caching-test
 - name: IMAGE_TAG

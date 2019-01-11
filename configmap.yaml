@@ -7,5 +7,5 @@ data:
   IMAGES: >
     che-theia=eclipse/che-theia:0.3.16-nightly;
     che-dev=eclipse/che-dev:nightly;
-  DAEMONSET_NAME: "daemonset-test"
+  DAEMONSET_NAME: "che-image-cache-refresh"
   CACHING_INTERVAL_HOURS: "12"

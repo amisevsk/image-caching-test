@@ -4,8 +4,8 @@ DOCKERIMAGE_TAG=dev
 DEPLOYMENT_NAME=daemonset-dc
 
 # Configuring openshift
-CLUSTERROLE_NAME='create-daemonset-cluster'
-CLUSTERROLEBINDING_NAME='daemonset-binding'
+ROLE_NAME='create-daemonset-cluster'
+ROLEBINDING_NAME='daemonset-binding'
 NAMESPACE='daemonset-test'
 
 
@@ -26,8 +26,8 @@ configure:
 	oc login -u system:admin
 	oc new-project ${NAMESPACE}
 	oc project ${NAMESPACE}
-	oc create clusterrole ${CLUSTERROLE_NAME} --verb=create,delete,watch,get --resource=daemonset.apps
-	oc create clusterrolebinding ${CLUSTERROLEBINDING_NAME} --clusterrole=${CLUSTERROLE_NAME} --serviceaccount=daemonset-test:daemonset-sa
+	oc create role ${ROLE_NAME} --verb=create,delete,watch,get --resource=daemonset.apps
+	oc create rolebinding ${ROLEBINDING_NAME} --role=${ROLE_NAME} --serviceaccount=daemonset-test:che-imagecaching-sa
 	oc create -f configmap.yaml
 	oc process -f app.yaml | oc apply -f -
 

@@ -26,7 +26,6 @@ var daemonsetName string
 var namespace string
 var cachingInterval int
 
-var containerCommand = []string{"/bin/sh", "-c", "sleep 60"}
 var propagationPolicy = metav1.DeletePropagationForeground
 var terminationGracePeriodSeconds = int64(1)
 
@@ -52,7 +51,7 @@ func makeContainer(name, image string) corev1.Container {
 	return corev1.Container{
 		Name:    name,
 		Image:   image,
-		Command: []string{"/bin/sh", "-c", "sleep 5"},
+		Command: []string{"/bin/sh", "-c", "sleep infinity"},
 	}
 }
 
@@ -94,9 +93,7 @@ func createDaemonset(clientset *kubernetes.Clientset) error {
 				},
 				Spec: corev1.PodSpec{
 					TerminationGracePeriodSeconds: &terminationGracePeriodSeconds,
-					InitContainers:                getContainers(),
-					Containers: []corev1.Container{corev1.Container{
-						Name: "idle", Image: "centos", Command: containerCommand}},
+					Containers:                    getContainers(),
 				},
 			},
 		},
@@ -164,7 +161,7 @@ func watchDaemonset(clientset *kubernetes.Clientset) watch.Interface {
 }
 
 // Check if daemonset with daemonsetName exists, and if so, delete it.
-func checkIfDaemonsetExists(clientset *kubernetes.Clientset) {
+func deleteDaemonsetIfExists(clientset *kubernetes.Clientset) {
 	daemonset, err := clientset.AppsV1().DaemonSets(namespace).Get(daemonsetName, metav1.GetOptions{})
 	if errors.IsNotFound(err) {
 		return
@@ -174,8 +171,21 @@ func checkIfDaemonsetExists(clientset *kubernetes.Clientset) {
 		log.Panicf(err.Error())
 	}
 	if daemonset != nil {
+		deleteWatch := watchDaemonset(clientset)
 		deleteDaemonset(clientset)
+		waitDaemonsetDeleted(clientset, deleteWatch.ResultChan())
+		deleteWatch.Stop()
 		log.Printf("Deleted existing daemonset")
+	}
+}
+
+func ensureDaemonsetExists(clientset *kubernetes.Clientset) {
+	log.Printf("Checking that daemonset exists.")
+	daemonset, err := clientset.AppsV1().DaemonSets(namespace).Get(daemonsetName, metav1.GetOptions{})
+	if err != nil || daemonset == nil {
+		log.Printf("Recreating daemonset due to error")
+		deleteDaemonsetIfExists(clientset)
+		cacheImages(clientset)
 	}
 }
 
@@ -187,11 +197,8 @@ func cacheImages(clientset *kubernetes.Clientset) {
 	watchChan := dsWatch.ResultChan()
 	createDaemonset(clientset)
 	waitDaemonsetReady(clientset, watchChan)
-	time.Sleep(30)
-	deleteDaemonset(clientset)
-	waitDaemonsetDeleted(clientset, watchChan)
 	dsWatch.Stop()
-	log.Printf("Done caching images")
+	log.Printf("Daemonset ready.")
 }
 
 func main() {
@@ -209,11 +216,12 @@ func main() {
 	}
 
 	// Clean up existing deployment if necessary
-	checkIfDaemonsetExists(clientset)
+	deleteDaemonsetIfExists(clientset)
+	cacheImages(clientset)
 
 	for {
-		cacheImages(clientset)
 		time.Sleep(time.Duration(cachingInterval) * time.Minute)
+		ensureDaemonsetExists(clientset)
 	}
 }
 

@@ -41,6 +41,16 @@ objects:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
+          - name: SERVICE_ACCOUNT_ID
+            valueFrom:
+              secretKeyRef:
+                key: service.account.id
+                value: image-caching-test
+          - name: SERVICE_ACCOUNT_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: service.account.secret
+                value: image-caching-test
         serviceAccountName: ${SERVICEACCOUNT_NAME}
 parameters:
 - name: SERVICEACCOUNT_NAME

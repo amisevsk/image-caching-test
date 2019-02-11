@@ -9,3 +9,5 @@ data:
     che-dev=eclipse/che-dev:nightly;
   DAEMONSET_NAME: "che-image-cache-refresh"
   CACHING_INTERVAL_HOURS: "12"
+  OPENSHIFT_PROXY_URL: "https://osoproxy.prod-preview.openshift.io"
+  OIDC_PROVIDER: "https://auth.prod-preview.openshift.io/api"

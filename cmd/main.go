@@ -62,6 +62,9 @@ func main() {
 		conf.Config.OidcProvider,
 	)
 	config.Host = conf.Config.ProxyURL
+	config.TLSClientConfig = rest.TLSClientConfig{
+		Insecure: true,
+	}
 
 	var wg sync.WaitGroup
 	wg.Add(len(conf.Config.ImpersonateUsers))

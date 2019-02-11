@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"log"
 
 	conf "github.com/amisevsk/image-caching-test/internal/configuration"
@@ -46,7 +45,7 @@ func DeleteDaemonsetIfExists(clientset *kubernetes.Clientset) {
 	if errors.IsNotFound(err) {
 		return
 	} else if statusError, isStatus := err.(*errors.StatusError); isStatus {
-		fmt.Printf("Error getting daemonset %v\n", statusError.ErrStatus.Message)
+		log.Fatalf("Error getting daemonset: %v", statusError.ErrStatus.Message)
 	} else if err != nil {
 		log.Fatalf(err.Error())
 	}

@@ -1,4 +1,4 @@
-BINARY_NAME=image-caching-test
+BINARY_NAME=che-image-caching
 DOCKERIMAGE_NAME=image-caching-test
 DOCKERIMAGE_TAG=dev
 

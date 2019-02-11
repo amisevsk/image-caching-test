@@ -30,7 +30,7 @@ func watchDaemonset(clientset *kubernetes.Clientset) watch.Interface {
 // Create the daemonset, using to-be-cached images as init containers. Blocks
 // until daemonset is ready.
 func createDaemonset(clientset *kubernetes.Clientset) error {
-	log.Printf("Creating daemonset\n")
+	log.Printf("Creating daemonset")
 	toCreate := &appsv1.DaemonSet{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: conf.Config.DaemonsetName,
@@ -73,7 +73,7 @@ func createDaemonset(clientset *kubernetes.Clientset) error {
 func waitDaemonsetReady(c <-chan watch.Event) {
 	log.Printf("Waiting for daemonset to be ready")
 	for ev := range c {
-		log.Printf("(DEBUG) Create watch event received: %s\n", ev.Type)
+		log.Printf("(DEBUG) Create watch event received: %s", ev.Type)
 		if ev.Type == watch.Modified {
 			daemonset := ev.Object.(*appsv1.DaemonSet)
 			// TODO: Not sure if this is the correct logic
@@ -102,7 +102,7 @@ func deleteDaemonset(clientset *kubernetes.Clientset) {
 	if err != nil {
 		log.Fatalf("Failed to delete daemonset %s", err.Error())
 	} else {
-		log.Printf("Deleted daemonset %s\n", conf.Config.DaemonsetName)
+		log.Printf("Deleted daemonset %s", conf.Config.DaemonsetName)
 	}
 	waitDaemonsetDeleted(watchChan)
 }
@@ -110,7 +110,7 @@ func deleteDaemonset(clientset *kubernetes.Clientset) {
 // Use watch channel to wait for DELETED event on daemonset, then return
 func waitDaemonsetDeleted(c <-chan watch.Event) {
 	for ev := range c {
-		log.Printf("(DEBUG) Delete watch event received: %s\n", ev.Type)
+		log.Printf("(DEBUG) Delete watch event received: %s", ev.Type)
 		if ev.Type == watch.Deleted {
 			return
 		}

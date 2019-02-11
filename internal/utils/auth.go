@@ -23,15 +23,22 @@ func GetServiceAccountToken(serviceAccountID, serviceAccountSecret, oidcProvider
 			"client_secret": {serviceAccountSecret},
 		})
 	if err != nil {
-		log.Fatalf("Could not get service account token")
+		log.Fatalf("Could not get service account token: %s", err)
 	}
 	defer resp.Body.Close()
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatalf("Could not read response body when getting service account token")
 	}
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		log.Fatalf("Failed to get service account token. Response: %s", body)
+	}
 
 	var token oidcResponse
 	json.Unmarshal(body, &token)
+	if token.AccessToken == "" {
+		log.Fatalf("Failed to parse token from json response")
+	}
 	return token.AccessToken
 }

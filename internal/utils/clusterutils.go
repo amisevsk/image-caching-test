@@ -78,7 +78,7 @@ func waitDaemonsetReady(c <-chan watch.Event) {
 			daemonset := ev.Object.(*appsv1.DaemonSet)
 			// TODO: Not sure if this is the correct logic
 			if daemonset.Status.NumberReady == daemonset.Status.DesiredNumberScheduled {
-				log.Printf("All nodes scheduled in daemonset, returning")
+				log.Printf("All nodes scheduled in daemonset")
 				return
 			}
 		} else if ev.Type == watch.Deleted {

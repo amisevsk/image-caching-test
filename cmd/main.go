@@ -52,7 +52,7 @@ func main() {
 	// Set up kubernetes client
 	config, err := rest.InClusterConfig()
 	if err != nil {
-		log.Printf(err.Error())
+		log.Fatalf(err.Error())
 	}
 
 	// Shared config to use osoproxy
